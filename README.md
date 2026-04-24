@@ -1,193 +1,88 @@
-Welcome to your new TanStack Start app! 
+# Calendar App
 
-# Getting Started
+A personal Google Calendar client with attendee-based color rules, per-event color overrides, and a fully customizable UI theme. Runs locally with Docker Compose (app + Postgres).
 
-To run this application:
+## Features
+
+- **Google Calendar sync** — reads events from your primary calendar via OAuth2
+- **Color rules** — automatically color events based on who is invited (first match wins)
+- **Per-event color override** — manually set a color for any individual event from its detail modal
+- **Theme editor** — customize all colors and opacities (backgrounds, borders, text, accent) with a live preview
+- **Persistent settings** — theme, rules, and event overrides are stored in a local Postgres database
+
+## Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- A Google Cloud project with the Calendar API enabled and an OAuth2 client ID
+
+## Setup
+
+### 1. Google OAuth credentials
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
+2. Create an **OAuth 2.0 Client ID** (Web application)
+3. Add `http://localhost:3000` to **Authorized JavaScript origins**
+4. Enable the **Google Calendar API** for your project
+5. Add your Google account as a test user under OAuth consent screen → Test users
+
+### 2. Environment file
+
+Create a `.env` file in the project root:
+
+```env
+VITE_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+VITE_GOOGLE_HINT_EMAIL=you@gmail.com
+```
+
+`VITE_GOOGLE_HINT_EMAIL` pre-fills the account picker so you skip the selection step.
+
+### 3. Run
+
+```bash
+docker compose up --build
+```
+
+Open [http://localhost:3000](http://localhost:3000), sign in with Google, and you're done.
+
+## Usage
+
+### Calendar views
+
+Use the toolbar buttons to switch between **Month**, **Week**, and **Day** views.
+
+### Color rules
+
+Go to **Settings → Color Rules**. Each rule matches events by attendee email and assigns a color. Rules are evaluated top-to-bottom — the first match wins.
+
+- **Add** — click the `+` button
+- **Edit** — click the pencil icon on any rule
+- **Delete** — click the trash icon
+
+### Per-event color
+
+Click any event to open its detail modal. Use the color swatches at the bottom to set a custom color for that specific event. Click **Reset** to revert to the rule-matched or default color.
+
+### Theme
+
+Go to **Settings → Appearance**. Every color in the UI has a color picker and an opacity slider. The preview calendar on the right updates live. Click **Reset to defaults** to restore the original theme.
+
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | [TanStack Start](https://tanstack.com/start) (React 19 + Vite + SSR) |
+| Routing | [TanStack Router](https://tanstack.com/router) (file-based) |
+| Calendar UI | [FullCalendar v6](https://fullcalendar.io/) |
+| Auth | [@react-oauth/google](https://github.com/MomenSherif/react-oauth-google) (implicit OAuth2) |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com/) + CSS custom properties |
+| Database | Postgres 16 via [postgres.js](https://github.com/porsager/postgres) |
+| Infrastructure | Docker Compose |
+
+## Development
+
+To run outside Docker (requires a local Postgres instance):
 
 ```bash
 npm install
-npm run dev
+DATABASE_URL=postgresql://calendar:calendar@localhost:5432/calendar npm run dev
 ```
-
-# Building For Production
-
-To build this application for production:
-
-```bash
-npm run build
-```
-
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
-```bash
-npm run test
-```
-
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `npm install @tailwindcss/vite tailwindcss -D`
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).

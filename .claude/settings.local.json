@@ -5,7 +5,13 @@
       "Bash(npx tsc *)",
       "Bash(npm run *)",
       "Bash(xargs ls *)",
-      "Bash(docker compose *)"
+      "Bash(docker compose *)",
+      "Bash(git -C /Users/jeremie/Repositories/personal/calendar-app config user.name)",
+      "Bash(git -C /Users/jeremie/Repositories/personal/calendar-app config user.email)",
+      "Bash(git *)",
+      "Bash(ssh -T git@github.com)",
+      "Read(//Users/jeremie/.ssh/**)",
+      "Bash(ssh *)"
     ]
   },
   "disabledMcpjsonServers": [
