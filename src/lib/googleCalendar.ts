@@ -14,6 +14,7 @@ interface GoogleEvent {
   start: { dateTime?: string; date?: string }
   end: { dateTime?: string; date?: string }
   attendees?: GoogleAttendee[]
+  recurringEventId?: string
 }
 
 export async function fetchCalendarEvents(accessToken: string): Promise<EventInput[]> {
@@ -50,6 +51,7 @@ export async function fetchCalendarEvents(accessToken: string): Promise<EventInp
       description: item.description,
       location: item.location,
       htmlLink: item.htmlLink,
+      recurringEventId: item.recurringEventId,
     },
   }))
 }

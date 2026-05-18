@@ -3,5 +3,13 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+ARG VITE_GOOGLE_CLIENT_ID
+ARG VITE_GOOGLE_HINT_EMAIL
+ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
+ENV VITE_GOOGLE_HINT_EMAIL=$VITE_GOOGLE_HINT_EMAIL
+RUN npm run build
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3000
 EXPOSE 3000
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["npm", "start"]

@@ -1,5 +1,6 @@
 import type { EventClickArg } from '@fullcalendar/core'
 import type { ColorRule, CalendarEventExtended } from '../lib/types'
+import { colorKeyForEvent } from '../lib/rules'
 
 const PRESET_COLORS = [
   '#ef4444', '#f97316', '#eab308', '#22c55e',
@@ -20,8 +21,9 @@ export function EventModal({ event, rules, eventColors, onColorChange, onClose }
   const { id, title, start, end, extendedProps, backgroundColor } = event.event
   const props = extendedProps as CalendarEventExtended
   const attendees: string[] = props.attendees ?? []
-  const eventId = id ?? ''
-  const override = eventId ? eventColors[eventId] : undefined
+  const colorKey = colorKeyForEvent(id, props.recurringEventId) ?? ''
+  const isRecurring = Boolean(props.recurringEventId)
+  const override = colorKey ? eventColors[colorKey] : undefined
 
   const fmt = (d: Date | null) =>
     d?.toLocaleString(undefined, {
@@ -142,18 +144,18 @@ export function EventModal({ event, rules, eventColors, onColorChange, onClose }
           )}
 
           {/* Event color override */}
-          {eventId && (
+          {colorKey && (
             <div
               className="mt-1 rounded-xl border p-3"
               style={{ borderColor: 'var(--theme-border, #e5e7eb)' }}
             >
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-medium" style={{ color: 'var(--theme-text, #173a40)' }}>
-                  Event color
+                  Event color{isRecurring && ' (all in series)'}
                 </span>
                 {override && (
                   <button
-                    onClick={() => onColorChange(eventId, null)}
+                    onClick={() => onColorChange(colorKey, null)}
                     className="text-xs transition hover:underline"
                     style={{ color: 'var(--theme-text-soft, #6b7280)' }}
                   >
@@ -165,7 +167,7 @@ export function EventModal({ event, rules, eventColors, onColorChange, onClose }
                 {PRESET_COLORS.map((c) => (
                   <button
                     key={c}
-                    onClick={() => onColorChange(eventId, c)}
+                    onClick={() => onColorChange(colorKey, c)}
                     className="h-6 w-6 rounded-full border-2 transition hover:scale-110"
                     style={{
                       backgroundColor: c,
@@ -186,7 +188,7 @@ export function EventModal({ event, rules, eventColors, onColorChange, onClose }
                   <input
                     type="color"
                     value={override ?? '#328f97'}
-                    onChange={(e) => onColorChange(eventId, e.target.value)}
+                    onChange={(e) => onColorChange(colorKey, e.target.value)}
                     className="absolute inset-0 cursor-pointer opacity-0"
                   />
                 </label>

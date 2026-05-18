@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   type ThemeConfig,
+  type ThemeColorKey,
   type ThemeSetting,
+  type CalendarView,
   applyTheme,
   mergeTheme,
   DEFAULT_THEME,
@@ -31,9 +33,7 @@ export function useTheme() {
     applyTheme(theme)
   }, [theme])
 
-  const updateSetting = (key: keyof ThemeConfig, value: Partial<ThemeSetting>) => {
-    const updated = { ...theme, [key]: { ...theme[key], ...value } }
-    setTheme(updated)
+  const persist = (updated: ThemeConfig) => {
     const email = authState.email
     if (!email) return
     if (saveTimer.current) clearTimeout(saveTimer.current)
@@ -42,11 +42,29 @@ export function useTheme() {
     }, 1000)
   }
 
+  const updateSetting = (key: ThemeColorKey, value: Partial<ThemeSetting>) => {
+    const updated = { ...theme, [key]: { ...theme[key], ...value } }
+    setTheme(updated)
+    persist(updated)
+  }
+
+  const updateEventSize = (size: number) => {
+    const updated = { ...theme, eventSize: size }
+    setTheme(updated)
+    persist(updated)
+  }
+
+  const updateDefaultView = (view: CalendarView) => {
+    const updated = { ...theme, defaultView: view }
+    setTheme(updated)
+    persist(updated)
+  }
+
   const reset = () => {
     setTheme(DEFAULT_THEME)
     const email = authState.email
     if (email) saveSettings({ data: { email, theme: DEFAULT_THEME } })
   }
 
-  return { theme, updateSetting, reset }
+  return { theme, updateSetting, updateEventSize, updateDefaultView, reset }
 }

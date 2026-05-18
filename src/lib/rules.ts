@@ -1,10 +1,16 @@
 import type { EventInput } from '@fullcalendar/core'
 import type { ColorRule } from './types'
 
+export function colorKeyForEvent(id: string | undefined, recurringEventId: string | undefined): string | undefined {
+  return recurringEventId ?? (id ? String(id) : undefined)
+}
+
 export function applyEventColors(events: EventInput[], eventColors: Record<string, string>): EventInput[] {
   if (Object.keys(eventColors).length === 0) return events
   return events.map((event) => {
-    const override = event.id ? eventColors[String(event.id)] : undefined
+    const recurringEventId = (event.extendedProps?.recurringEventId as string | undefined) ?? undefined
+    const key = colorKeyForEvent(event.id ? String(event.id) : undefined, recurringEventId)
+    const override = key ? eventColors[key] : undefined
     if (!override) return event
     return { ...event, backgroundColor: override, borderColor: override }
   })

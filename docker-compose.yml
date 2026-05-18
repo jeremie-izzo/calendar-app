@@ -16,7 +16,11 @@ services:
       retries: 10
 
   app:
-    build: .
+    build:
+      context: .
+      args:
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
+        VITE_GOOGLE_HINT_EMAIL: ${VITE_GOOGLE_HINT_EMAIL}
     ports:
       - "3000:3000"
     env_file: .env
@@ -25,13 +29,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    develop:
-      watch:
-        - action: sync
-          path: ./src
-          target: /app/src
-        - action: rebuild
-          path: package.json
 
 volumes:
   pgdata:

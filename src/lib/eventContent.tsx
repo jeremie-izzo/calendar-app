@@ -18,14 +18,18 @@ export function makeEventContent(defaultColor: string) {
 
     return (
       <div
-        className="w-full overflow-hidden rounded px-1.5 py-0.5"
+        className="w-full overflow-hidden rounded"
         style={{
           backgroundColor: bg,
           borderLeft: `3px solid ${color}`,
           color,
+          padding: 'calc(0.125rem * var(--event-scale, 1)) calc(0.375rem * var(--event-scale, 1))',
         }}
       >
-        <span className="block truncate text-xs font-semibold leading-snug">
+        <span
+          className="block truncate font-semibold leading-snug"
+          style={{ fontSize: 'calc(0.75rem * var(--event-scale, 1))' }}
+        >
           {arg.timeText && (
             <span className="mr-1 font-normal opacity-75">{arg.timeText}</span>
           )}

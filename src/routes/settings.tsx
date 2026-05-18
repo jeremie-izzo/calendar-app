@@ -9,7 +9,7 @@ export const Route = createFileRoute('/settings')({component: SettingsPage})
 
 function SettingsPage() {
     const {rules, addRule, removeRule, updateRule} = useColorRules()
-    const {theme, updateSetting, reset} = useTheme()
+    const {theme, updateSetting, updateEventSize, updateDefaultView, reset} = useTheme()
 
     return (
         <div className="flex h-screen flex-col" style={{background: 'var(--theme-bg, #f3f4f6)'}}>
@@ -52,7 +52,7 @@ function SettingsPage() {
                                 borderColor: 'var(--theme-border, #e5e7eb)',
                             }}
                         >
-                            <ThemeEditor theme={theme} onChange={updateSetting} onReset={reset}/>
+                            <ThemeEditor theme={theme} onChange={updateSetting} onEventSizeChange={updateEventSize} onDefaultViewChange={updateDefaultView} onReset={reset}/>
                         </div>
 
                         {/* Live preview */}

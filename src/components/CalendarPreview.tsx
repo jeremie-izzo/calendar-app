@@ -41,6 +41,7 @@ export function CalendarPreview({defaultEventColor}: CalendarPreviewProps) {
                 height="auto"
                 eventDisplay="block"
                 dayMaxEvents={2}
+                fixedWeekCount={false}
                 editable={false}
                 selectable={false}
             />

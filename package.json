@@ -9,6 +9,8 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
+    "start": "node server.mjs",
+    "serve": "npm run build && npm run start",
     "test": "vitest run"
   },
   "dependencies": {

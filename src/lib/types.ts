@@ -10,4 +10,5 @@ export interface CalendarEventExtended {
   description?: string
   location?: string
   htmlLink?: string
+  recurringEventId?: string
 }

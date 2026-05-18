@@ -14,7 +14,7 @@ export const Route = createFileRoute('/')({ component: CalendarPage })
 
 function CalendarPage() {
   const { isAuthenticated, accessToken, userEmail, login, logout } = useGoogleAuth()
-  const { theme } = useTheme()
+  const { theme, updateDefaultView } = useTheme()
   const { rules } = useColorRules()
   const { eventColors, setEventColor } = useEventColors()
   const { events, loading, error } = useCalendarEvents(accessToken, rules, eventColors)
@@ -86,6 +86,8 @@ function CalendarPage() {
           events={events}
           onEventClick={(info) => setSelectedEvent(info)}
           defaultEventColor={theme.defaultEventColor.color}
+          defaultView={theme.defaultView}
+          onViewChange={updateDefaultView}
         />
       </div>
 

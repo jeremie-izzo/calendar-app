@@ -3,6 +3,16 @@ export interface ThemeSetting {
     opacity: number // 0–1
 }
 
+export const CALENDAR_VIEWS = ['dayGridMonth', 'dayGridTwoWeek', 'timeGridWeek', 'timeGridDay'] as const
+export type CalendarView = typeof CALENDAR_VIEWS[number]
+
+export const CALENDAR_VIEW_LABELS: Record<CalendarView, string> = {
+    dayGridMonth: 'Month',
+    dayGridTwoWeek: '2 weeks',
+    timeGridWeek: 'Week',
+    timeGridDay: 'Day',
+}
+
 export interface ThemeConfig {
     pageBg: ThemeSetting
     surfaceBg: ThemeSetting
@@ -13,7 +23,11 @@ export interface ThemeConfig {
     accentColor: ThemeSetting
     defaultEventColor: ThemeSetting
     todayBg: ThemeSetting
+    eventSize: number  // multiplier, 1 = default
+    defaultView: CalendarView
 }
+
+export type ThemeColorKey = keyof Omit<ThemeConfig, 'eventSize' | 'defaultView'>
 
 export const DEFAULT_THEME: ThemeConfig = {
     pageBg: {color: '#f3f4f6', opacity: 1},
@@ -25,9 +39,11 @@ export const DEFAULT_THEME: ThemeConfig = {
     accentColor: {color: '#328f97', opacity: 1},
     defaultEventColor: {color: '#328f97', opacity: 1},
     todayBg: {color: '#4fb8b2', opacity: 0.08},
+    eventSize: 1,
+    defaultView: 'dayGridMonth',
 }
 
-export const THEME_LABELS: Record<keyof ThemeConfig, string> = {
+export const THEME_LABELS: Record<ThemeColorKey, string> = {
     pageBg: 'Page background',
     surfaceBg: 'Calendar background',
     topbarBg: 'Top bar background',
@@ -51,11 +67,18 @@ export function toRgba(color: string, opacity: number): string {
 }
 
 export function mergeTheme(stored: Partial<ThemeConfig>): ThemeConfig {
-    const result = {...DEFAULT_THEME}
-    for (const key of Object.keys(DEFAULT_THEME) as (keyof ThemeConfig)[]) {
-        if (stored[key] && typeof stored[key] === 'object') {
-            result[key] = {...DEFAULT_THEME[key], ...stored[key]}
+    const result: ThemeConfig = {...DEFAULT_THEME}
+    for (const key of Object.keys(THEME_LABELS) as ThemeColorKey[]) {
+        const value = stored[key]
+        if (value && typeof value === 'object') {
+            result[key] = {...DEFAULT_THEME[key], ...value}
         }
+    }
+    if (typeof stored.eventSize === 'number' && Number.isFinite(stored.eventSize)) {
+        result.eventSize = stored.eventSize
+    }
+    if (typeof stored.defaultView === 'string' && (CALENDAR_VIEWS as readonly string[]).includes(stored.defaultView)) {
+        result.defaultView = stored.defaultView as CalendarView
     }
     return result
 }
@@ -75,5 +98,6 @@ export function applyTheme(raw: Partial<ThemeConfig>) {
     set('--theme-event', theme.accentColor)
     root.style.setProperty('--theme-default-event', theme.defaultEventColor.color)
     set('--theme-today', theme.todayBg)
+    root.style.setProperty('--event-scale', String(theme.eventSize))
 }
 

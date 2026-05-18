@@ -86,19 +86,6 @@
   border-color: var(--lagoon);
 }
 
-/* Dark mode FullCalendar */
-:root[data-theme="dark"] .fc-app .fc {
-  --fc-border-color: #e5e7eb;
-  --fc-page-bg-color: #f3f4f6;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .fc-app .fc {
-    --fc-border-color: #e5e7eb;
-    --fc-page-bg-color: #f3f4f6;
-  }
-}
-
 @theme {
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
